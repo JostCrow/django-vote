@@ -9,6 +9,13 @@ except ImportError:
 
 from .compat import AUTH_USER_MODEL
 
+VOTE_CHOISES = (
+    (1, '+1'),
+    (0, 'No vote'),
+    (-1, '-1'),
+)
+
+
 class VoteManger(models.Manager):
     def filter(self, *args, **kwargs):
         if 'content_object' in kwargs:
@@ -19,8 +26,10 @@ class VoteManger(models.Manager):
                     'object_id':content_object.pk
                     })
         return super(VoteManger, self).filter(*args, **kwargs)
-    
+
+
 class Vote(models.Model):
+    vote = models.SmallIntegerField(choices=VOTE_CHOICES, null=True)
     user = models.ForeignKey(AUTH_USER_MODEL)
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
@@ -28,7 +37,7 @@ class Vote(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
 
     objects = VoteManger()
-    
+
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
 
@@ -40,5 +49,5 @@ class Vote(models.Model):
         }
         if instance is not None:
             kwargs["object_id"] = instance.pk
-            
+
         return cls.objects.filter(**kwargs)
