@@ -58,7 +58,8 @@ class _VotableManager(models.Manager):
     @instance_required
     def up(self, user):
         with transaction.atomic():
-            vote = self.through.objects.get_or_create(user=user, content_object=self.instance)
+            vote = self.through.objects.get_or_create(user=user, object_id=self.instance.id)
+            vote.content_object=self.instance
             vote.vote = 1
             vote.save()
             if self.extra_field:
@@ -68,7 +69,8 @@ class _VotableManager(models.Manager):
     @instance_required
     def down(self, user):
         with transaction.atomic():
-            vote = self.through.objects.get_or_create(user=user, content_object=self.instance)
+            vote = self.through.objects.get_or_create(user=user, object_id=self.instance.id)
+            vote.content_object=self.instance
             vote.vote = -1
             vote.save()
             if self.extra_field:
@@ -79,14 +81,14 @@ class _VotableManager(models.Manager):
     def delete(self, user):
         with transaction.atomic():
             try:
-                vote = self.through.objects.get(user=user, content_object=self.instance)
+                vote = self.through.objects.get(user=user, object_id=self.instance.id)
                 vote.delete()
             except Exception as e:
                 pass
 
     @instance_required
     def exists(self, user):
-        return self.through.objects.filter(user=user, content_object=self.instance).exists()
+        return self.through.objects.filter(user=user, object_id=self.instance.id).exists()
 
     def all(self, user):
         content_type = ContentType.objects.get_for_model(self.model)
