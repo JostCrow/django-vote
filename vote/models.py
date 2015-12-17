@@ -9,7 +9,7 @@ except ImportError:
 
 from .compat import AUTH_USER_MODEL
 
-VOTE_CHOISES = (
+VOTE_CHOICES = (
     (1, '+1'),
     (0, 'No vote'),
     (-1, '-1'),
