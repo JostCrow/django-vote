@@ -59,7 +59,10 @@ class _VotableManager(models.Manager):
     def up(self, user):
         with transaction.atomic():
             content_type = ContentType.objects.get_for_model(self.model)
-            vote = self.through.objects.get_or_create(user=user, object_id=self.instance.id, content_type=content_type, defaults={'content_object': self.instance})
+            vote, created = self.through.objects.get_or_create(
+                user=user, object_id=self.instance.id, content_type=content_type,
+                defaults={'content_object': self.instance}
+            )
             vote.vote = 1
             vote.save()
             if self.extra_field:
@@ -70,8 +73,10 @@ class _VotableManager(models.Manager):
     def down(self, user):
         with transaction.atomic():
             content_type = ContentType.objects.get_for_model(self.model)
-            vote = self.through.objects.get_or_create(user=user, object_id=self.instance.id, content_type=content_type, defaults={'content_object': self.instance})
-            vote.content_object=self.instance
+            vote, created = self.through.objects.get_or_create(
+                user=user, object_id=self.instance.id, content_type=content_type,
+                defaults={'content_object': self.instance}
+            )
             vote.vote = -1
             vote.save()
             if self.extra_field:
