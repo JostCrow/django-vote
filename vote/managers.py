@@ -93,8 +93,14 @@ class _VotableManager(models.Manager):
         object_ids = self.through.objects.filter(user=user, content_type=content_type).values_list('object_id', flat=True)
         return self.model.objects.filter(pk__in=list(object_ids))
 
+    def count_up(self):
+        return self.through.votes_for(self.model, self.instance).filter(vote=1).count()
+
+    def count_down(self):
+        return self.through.votes_for(self.model, self.instance).filter(vote=-1).count()
+
     def count(self):
-        return self.through.votes_for(self.model, self.instance).count()
+        return self.count_up() - self.count_down()
 
     def users(self):
         return self.through.votes_for(self.model, self.instance).order_by('-create_at').values_list('user_id', 'create_at')
