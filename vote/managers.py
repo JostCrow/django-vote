@@ -96,6 +96,14 @@ class _VotableManager(models.Manager):
     def exists(self, user):
         return self.through.objects.filter(user=user, object_id=self.instance.id).exists()
 
+    @instance_required
+    def has_upvoted(self, user):
+        return self.through.objects.filter(user=user, object_id=self.instance.id, vote=1).exists()
+
+    @instance_required
+    def has_downvoted(self, user):
+        return self.through.objects.filter(user=user, object_id=self.instance.id, vote=-1).exists()
+
     def all(self, user):
         content_type = ContentType.objects.get_for_model(self.model)
         object_ids = self.through.objects.filter(user=user, content_type=content_type).values_list('object_id', flat=True)
