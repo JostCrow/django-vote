@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 
@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='django-vote',
     version='1.1.1',
-    packages=['vote'],
+    packages=find_packages(exclude=['tests']),
     include_package_data=True,
     license='BSD License',
     description='A simple Django app to conduct vote.',
